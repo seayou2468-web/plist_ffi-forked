@@ -1,6 +1,6 @@
 [package]
 name = "plist_ffi"
-version = "0.1.1"
+version = "0.1.2"
 edition = "2024"
 description = "C FFI for the amazing plist crate, compatible with libplist"
 authors = ["Jackson Coxson"]
@@ -24,7 +24,7 @@ danger = []
 default = ["danger"]
 
 [lib]
-crate-type = ["staticlib", "cdylib"]
+crate-type = ["rlib", "staticlib", "cdylib"]
 
 [package.metadata.docs.rs]
 all-features = true
