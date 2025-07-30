@@ -61,7 +61,7 @@ pub const PLIST_OPT_NO_NEWLINE: PlistWriteOptions = 1 << 2;
 pub const PLIST_OPT_INDENT: PlistWriteOptions = 1 << 3;
 
 #[allow(non_camel_case_types)]
-type plist_t = *mut PlistWrapper;
+pub type plist_t = *mut PlistWrapper;
 #[allow(non_camel_case_types)]
 type plist_array_iter = *mut PlistWrapper;
 #[allow(non_camel_case_types)]
@@ -129,7 +129,7 @@ impl PlistWrapper {
             children_wrappers: Vec::new(),
         }
     }
-    pub(crate) fn into_ptr(self) -> plist_t {
+    pub fn into_ptr(self) -> plist_t {
         let p = Box::new(self);
         Box::into_raw(p)
     }
