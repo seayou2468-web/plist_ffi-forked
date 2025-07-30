@@ -121,6 +121,7 @@ pub unsafe extern "C" fn plist_copy(node: plist_t) -> plist_t {
 /// # Safety
 /// Needs to be allocated by this library
 /// I sure hope nothing bad happens
+#[unsafe(no_mangle)]
 pub unsafe extern "C" fn plist_mem_free(data: *mut c_char) {
     let _ = unsafe { CString::from_raw(data) };
 }
