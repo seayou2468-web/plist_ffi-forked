@@ -100,13 +100,9 @@ pub unsafe extern "C" fn plist_free(plist: plist_t) {
     if plist.is_null() {
         return;
     }
-    let parent = unsafe { Box::from_raw(plist) };
-    for c in &parent.children_wrappers {
-        unsafe {
-            // recurse through the tree
-            plist_free(*c);
-        }
-    }
+    println!("FREEING PLIST {plist:?}");
+    let _parent = unsafe { Box::from_raw(plist) };
+    // The drop function will take care of the children
 }
 
 /// # Safety

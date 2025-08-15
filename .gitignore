@@ -29,3 +29,6 @@ test/plist_otest
 test/integer_set
 test/data/*.out
 test/*.trs
+a.out
+cpp/examples/build
+out.plist
