@@ -100,7 +100,6 @@ pub unsafe extern "C" fn plist_free(plist: plist_t) {
     if plist.is_null() {
         return;
     }
-    println!("FREEING PLIST {plist:?}");
     let _parent = unsafe { Box::from_raw(plist) };
     // The drop function will take care of the children
 }
