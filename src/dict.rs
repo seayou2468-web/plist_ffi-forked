@@ -96,21 +96,21 @@ pub unsafe extern "C" fn plist_dict_get_item(node: plist_t, key: *const c_char) 
     let key = unsafe { CStr::from_ptr(key) }.to_str().unwrap();
     let wrapper = unsafe { &mut *node };
     let node = wrapper.borrow_self();
-    if let Value::Dictionary(d) = node {
-        if let Some(v) = d.get_mut(key) {
-            let p = PlistWrapper {
-                node: NodeType::Child {
-                    node: v as *mut Value,
-                    parent: node as *mut Value,
-                    index: u32::MAX,
-                    key: Some(key.to_string()),
-                },
-                children_wrappers: Vec::new(),
-            }
-            .into_ptr();
-            wrapper.children_wrappers.push(p);
-            return p;
+    if let Value::Dictionary(d) = node
+        && let Some(v) = d.get_mut(key)
+    {
+        let p = PlistWrapper {
+            node: NodeType::Child {
+                node: v as *mut Value,
+                parent: node as *mut Value,
+                index: u32::MAX,
+                key: Some(key.to_string()),
+            },
+            children_wrappers: Vec::new(),
         }
+        .into_ptr();
+        wrapper.children_wrappers.push(p);
+        return p;
     }
     null_mut()
 }
