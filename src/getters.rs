@@ -2,7 +2,7 @@
 
 use std::{
     ffi::{CString, c_char},
-    ptr::null_mut,
+    ptr::{null, null_mut},
 };
 
 use plist::Value;
@@ -86,9 +86,14 @@ pub unsafe extern "C" fn plist_get_string_val(node: plist_t, val: *mut *mut c_ch
 /// Don't pass a bad plist >:(
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn plist_get_string_ptr(node: plist_t, length: *mut u64) -> *const c_char {
+    if node.is_null() {
+        return null();
+    }
     let node = unsafe { &mut *node }.borrow_self();
     if let Value::String(s) = node {
-        unsafe { *length = s.len() as u64 };
+        if !length.is_null() {
+            unsafe { *length = s.len() as u64 };
+        }
         s.as_ptr() as *const c_char
     } else {
         null_mut()
