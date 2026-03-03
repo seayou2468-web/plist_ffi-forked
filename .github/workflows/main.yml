@@ -22,7 +22,7 @@ jobs:
       - run: rustup target add aarch64-apple-ios
 
       # 4️⃣ Install cbindgen
-      - run: cargo install cbindgen --version 0.29
+      - run: cargo install cbindgen --version "^0.29"
 
       # 5️⃣ Set Xcode
       - run: sudo xcode-select -s /Applications/Xcode.app/Contents/Developer
