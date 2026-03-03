@@ -1,0 +1,64 @@
+name: iOS Device Build (plist_ffi)
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build-ios:
+    runs-on: macos-latest
+    env:
+      RUSTUP_HOME: ${{ github.workspace }}/.rustup
+      CARGO_HOME: ${{ github.workspace }}/.cargo
+
+    steps:
+      # 1️⃣ Checkout
+      - uses: actions/checkout@v4
+
+      # 2️⃣ Install Rust
+      - uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          override: true
+          profile: minimal
+
+      # 3️⃣ Add iOS target
+      - run: rustup target add aarch64-apple-ios
+
+      # 4️⃣ Install Xcode tools
+      - run: sudo xcode-select -s /Applications/Xcode.app/Contents/Developer
+
+      # 5️⃣ Build Rust FFI for iOS device
+      - run: cargo build --release --target aarch64-apple-ios --features danger
+
+      # 6️⃣ Generate C headers with cbindgen
+      - run: |
+          cbindgen --crate plist_ffi \
+                   --output plist.h \
+                   --lang C \
+                   --include-version
+          
+      # 7️⃣ Compile C shims
+      - run: |
+          clang \
+            -target arm64-apple-ios \
+            -isysroot $(xcrun --sdk iphoneos --show-sdk-path) \
+            -c src/shims.c \
+            -o shims.o
+          ar rcs libplist_shims.a shims.o
+
+      # 8️⃣ Package artifacts
+      - run: |
+          mkdir -p release_artifacts
+          cp target/aarch64-apple-ios/release/libplist_ffi.a release_artifacts/
+          cp libplist_shims.a release_artifacts/
+          cp plist.h release_artifacts/
+          cd release_artifacts && zip -r plist_ffi_ios.zip *
+
+      # 9️⃣ Upload as artifact
+      - uses: actions/upload-artifact@v4
+        with:
+          name: plist_ffi_ios
+          path: release_artifacts/plist_ffi_ios.zip
