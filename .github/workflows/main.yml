@@ -31,7 +31,7 @@ jobs:
       - run: cargo build --release --target aarch64-apple-ios --features danger
 
       # 7️⃣ Generate C headers
-      - run: cbindgen --crate plist_ffi --output plist.h --lang C --include-version
+      - run: cbindgen --crate plist_ffi --output plist.h --lang C --package-version
 
       # 8️⃣ (任意) Compile C shims
       - run: |
