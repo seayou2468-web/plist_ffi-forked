@@ -1,14 +1,11 @@
-name: iOS Device Build (plist_ffi)
+name: iOS Device Build (plist_ffi Artifacts)
 
 on:
-  workflow_dispatch:
+  workflow_dispatch:  # 手動実行用
 
 jobs:
   build-ios:
     runs-on: macos-latest
-    env:
-      RUSTUP_HOME: ${{ github.workspace }}/.rustup
-      CARGO_HOME: ${{ github.workspace }}/.cargo
 
     steps:
       # 1️⃣ Checkout
@@ -21,41 +18,35 @@ jobs:
           override: true
           profile: minimal
 
-      # 3️⃣ Add iOS target
+      # 3️⃣ Add iOS device target
       - run: rustup target add aarch64-apple-ios
 
-      # 4️⃣ Install Xcode tools
+      # 4️⃣ Install cbindgen
+      - run: cargo install cbindgen --version 0.29
+
+      # 5️⃣ Set Xcode
       - run: sudo xcode-select -s /Applications/Xcode.app/Contents/Developer
 
-      # 5️⃣ Build Rust FFI for iOS device
+      # 6️⃣ Build Rust FFI for iOS device
       - run: cargo build --release --target aarch64-apple-ios --features danger
 
-      # 6️⃣ Generate C headers with cbindgen
-      - run: |
-          cbindgen --crate plist_ffi \
-                   --output plist.h \
-                   --lang C \
-                   --include-version
-          
-      # 7️⃣ Compile C shims
+      # 7️⃣ Generate C headers
+      - run: cbindgen --crate plist_ffi --output plist.h --lang C --include-version
+
+      # 8️⃣ (任意) Compile C shims
       - run: |
           clang \
-            -target arm64-apple-ios \
-            -isysroot $(xcrun --sdk iphoneos --show-sdk-path) \
-            -c src/shims.c \
-            -o shims.o
-          ar rcs libplist_shims.a shims.o
+            -Iinclude \
+            -Ilibcnary/include \
+            -Wall -Wextra \
+            src/shims.c \
+            -o plist_shims
 
-      # 8️⃣ Package artifacts
-      - run: |
-          mkdir -p release_artifacts
-          cp target/aarch64-apple-ios/release/libplist_ffi.a release_artifacts/
-          cp libplist_shims.a release_artifacts/
-          cp plist.h release_artifacts/
-          cd release_artifacts && zip -r plist_ffi_ios.zip *
-
-      # 9️⃣ Upload as artifact
+      # 9️⃣ Upload artifacts (ライブラリとヘッダ)
       - uses: actions/upload-artifact@v4
         with:
-          name: plist_ffi_ios
-          path: release_artifacts/plist_ffi_ios.zip
+          name: plist_ffi-ios-artifacts
+          path: |
+            target/aarch64-apple-ios/release/libplist_ffi.a
+            plist.h
+            plist_shims
