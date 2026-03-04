@@ -1,0 +1,10 @@
+# cbindgen.toml
+[parse]
+parse_deps = true
+clean = true
+
+[defines]
+danger = []
+
+[output]
+includes = ["<stdio.h>"]
