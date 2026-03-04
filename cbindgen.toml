@@ -4,7 +4,7 @@ parse_deps = true
 clean = true
 
 [defines]
-danger = []
+danger = ""  # ← 空文字列で feature を定義
 
 [output]
 includes = ["<stdio.h>"]
