@@ -1,10 +1,9 @@
 # cbindgen.toml
-[parse]
 parse_deps = true
 clean = true
 
 [defines]
-danger = ""  # ← 空文字列で feature を定義
+danger = ""  # feature 名だけ定義
 
-[output]
-includes = ["<stdio.h>"]
+# 出力関連はトップレベル
+includes = ["<stdio.h>"]  # FILE 型を解決
