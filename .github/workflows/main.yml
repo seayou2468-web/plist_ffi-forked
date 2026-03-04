@@ -23,7 +23,7 @@ jobs:
 
       # 4️⃣ Setup official Xcode action
       - name: Setup Xcode
-        uses: maxim-lobanov/setup-xcode@v3
+        uses: maxim-lobanov/setup-xcode@v1
         with:
           xcode-version: '15.2'   # iOS 26 SDK 対応 Xcode
 
