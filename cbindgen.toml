@@ -37,3 +37,4 @@ danger = ""
 # parse オプション
 [parse]
 parse_deps = true
+only_target_dependencies = true
